@@ -1,31 +1,41 @@
 <?php
-$pdo = new PDO("mysql:host=localhost;dbname=blog;charset=utf8", 'root', '');
-$req = $pdo->query('SELECT id, titre, DATE_FORMAT(date_creation, "%d/%m/%Y") as date, DATE_FORMAT(date_creation, "%Hh%imin%ss") as heure, contenu FROM billets ORDER BY id desc LIMIT 5');
-$billets = $req->fetchAll();
-?>
+require('controller/frontend.php');
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="style.css">
-    <title>Blog billets</title>
-</head>
-<body>
-    <h1>Blog</h1>
-    <h2>Derniers billets de blog :</h2>
-    <?php foreach ($billets as $billet) : ?>
-        <?php extract($billet); ?>
-        <div class="news">
-            <h3><?= $titre. ' le '. $date. ' à '. $heure ?></h3>
-            <p>
-                <?= $contenu ?><br>
-            <a href="commentaires.php?id=<?= $id ?>">Commentaires</a>
-            </p>
-        </div>
-
-    <?php endforeach; ?>
-</body>
-</html>
+try { // On essaie de faire des choses
+    if (isset($_GET['action'])) {
+        if ($_GET['action'] == 'listPosts') {
+            listPosts();
+        }
+        elseif ($_GET['action'] == 'post') {
+            if (isset($_GET['id']) && $_GET['id'] > 0) {
+                post();
+            }
+            else {
+                // Erreur ! On arrête tout, on envoie une exception, donc au saute directement au catch
+                throw new Exception('Aucun identifiant de billet envoyé');
+            }
+        }
+        elseif ($_GET['action'] == 'addComment') {
+            if (isset($_GET['id']) && $_GET['id'] > 0) {
+                if (!empty($_POST['author']) && !empty($_POST['comment'])) {
+                    addComment($_GET['id'], $_POST['author'], $_POST['comment']);
+                }
+                else {
+                    // Autre exception
+                    throw new Exception('Tous les champs ne sont pas remplis !');
+                }
+            }
+            else {
+                // Autre exception
+                throw new Exception('Aucun identifiant de billet envoyé');
+            }
+        }
+    }
+    else {
+        listPosts();
+    }
+}
+catch(Exception $e) { // S'il y a eu une erreur, alors...
+    $errorMessage = $e->getMessage();
+    require('view/frontend/errorView.php');
+}
