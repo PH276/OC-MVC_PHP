@@ -1,4 +1,6 @@
 <?php
+use \Ph\Blog\Model\PostManager;
+use \Ph\Blog\Model\CommentManager;
 
 require_once('model/PostManager.php');
 require_once('model/CommentManager.php');
