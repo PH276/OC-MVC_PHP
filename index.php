@@ -7,8 +7,12 @@ try { // On essaie de faire des choses
             listPosts();
         }
         elseif ($_GET['action'] == 'post') {
-            if (isset($_GET['id']) && $_GET['id'] > 0) {
-                post();
+            if (isset($_GET['id']) && $_GET['id'] > 0 ) {
+                if (isset($_GET['commentId']) && $_GET['commentId'] > 0){
+                    comment();
+                } else {
+                    post();
+                }
             }
             else {
                 // Erreur ! On arrête tout, on envoie une exception, donc au saute directement au catch
@@ -28,6 +32,15 @@ try { // On essaie de faire des choses
             else {
                 // Autre exception
                 throw new Exception('Aucun identifiant de billet envoyé');
+            }
+        }
+        elseif ($_GET['action'] == 'modifyComment') {
+            if (!empty($_POST['author']) && !empty($_POST['comment'])) {
+                modifyComment($_GET['id'], $_POST['id'], $_POST['author'], $_POST['comment']);
+            }
+            else {
+                // Autre exception
+                throw new Exception('Tous les champs ne sont pas remplis !');
             }
         }
     }

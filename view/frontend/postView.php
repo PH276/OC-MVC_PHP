@@ -21,26 +21,27 @@
 while ($comment = $comments->fetch())
 {
     ?>
-    <p><strong><?= htmlspecialchars($comment['author']) ?></strong> le <?= $comment['comment_date_fr'] ?></p>
+    <p><strong><?= htmlspecialchars($comment['author']) ?></strong> le <?= $comment['comment_date_fr'] ?> </p>
+    <a href="index.php?action=post&id=<?= $post['id'] ?>&commentId=<?= htmlspecialchars($comment['id']) ?>">Modifier le commentaire</a>
     <p><?= nl2br(htmlspecialchars($comment['comment'])) ?></p>
     <?php
 }
 
-
 $comments->closeCursor();
 ?>
-
-<form action="index.php?action=addComment&amp;id=<?= $post['id'] ?>" method="post">
+<?php $action = isset($commentPost)?'modifyComment':'addComment'; ?>
+<form action="index.php?action=<?= $action ?>&amp;id=<?= $post['id'] ?>" method="post">
+    <input type="hidden" name="id" value="<?= isset($commentPost)?$commentPost['id']:'' ?>">
     <div>
         <label for="author">Auteur</label><br />
-        <input type="text" id="author" name="author" />
+        <input type="text" id="author" name="author" value="<?= isset($commentPost)?$commentPost['author']:'' ?>"/>
     </div>
     <div>
         <label for="comment">Commentaire</label><br />
-        <textarea id="comment" name="comment"></textarea>
+        <textarea id="comment" name="comment"><?= isset($commentPost)?$commentPost['comment']:'' ?></textarea>
     </div>
     <div>
-        <input type="submit" />
+        <input type="submit"/>
     </div>
 </form>
 
